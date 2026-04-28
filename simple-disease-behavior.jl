@@ -1,3 +1,10 @@
+
+import Pkg
+Pkg.add("DynamicalSystems")
+Pkg.add("OrdinaryDiffEq")
+Pkg.add("GLMakie")
+Pkg.add("Roots")
+
 using DynamicalSystems
 using OrdinaryDiffEq
 using GLMakie
@@ -232,7 +239,9 @@ if length(Equilibria) > 1
         label="EE1")
 end
 
-save("simple-disease-behavior-plots/f1.png", f2, px_per_unit=1)
+out_path = "simple-disease-behavior-plots"
+mkpath(out_path)
+save(f"./{out_path}/f1.png", f2, px_per_unit=1)
 display(f2)
 
 ft = Figure(size = (600, 450))
@@ -265,7 +274,7 @@ for ind in filter(i -> isassigned(data, i), 1:length(data))
             )
 end
 
-save("simple-disease-behavior-plots/ft.png", ft, px_per_unit=1)
+save(f"./{out_path}/ft.png", ft, px_per_unit=1)
 display(f2)
 # ft
 
