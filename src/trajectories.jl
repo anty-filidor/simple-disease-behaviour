@@ -10,7 +10,7 @@ function my_trajectory(x0, I, r, p, c)
         t = t[t0:end]
         println(size(I))
         println(size(t))
-        return [x, I]
+        return [x, I, t]
     end
 end
 

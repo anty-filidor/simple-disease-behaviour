@@ -96,7 +96,7 @@ if length(Equilibria) > 1
         Equilibria[2][1],
         Equilibria[2][2],
         color = :blue,
-        marker = Equilibria[1][3] == true ? :circle : :star4,
+        marker = Equilibria[2][3] == true ? :circle : :star4,
         markersize = 20.0,
         alpha = 1.0,
         strokecolor = :white,
@@ -119,11 +119,14 @@ ax =
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
+    t = data[ind][3]
     cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
     x = x[1:(end-1)]
     I = I[1:(end-1)]
+    t = t[1:(end-1)]
     lines!(
         ax,
+        t,
         I,
         colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
         alpha = 0.3,
