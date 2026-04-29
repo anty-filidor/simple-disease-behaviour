@@ -8,3 +8,5 @@ p0 = 1.05
 c0 = 0.19
 
 N = 2
+
+figs_path = "figs"

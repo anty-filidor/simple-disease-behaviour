@@ -101,9 +101,8 @@ if length(Equilibria) > 1
         label="EE1")
 end
 
-out_path = "simple-disease-behaviour-plots"
-mkpath(out_path)
-save("$out_path/f1.png", f2, px_per_unit=1)
+mkpath(figs_path)
+save("$figs_path/f1.png", f2, px_per_unit=1)
 display(f2)
 
 # --- Time series (I vs t) ---
@@ -131,7 +130,7 @@ for ind in filter(i -> isassigned(data, i), 1:length(data))
             )
 end
 
-save("$out_path/ft.png", ft, px_per_unit=1)
+save("$figs_path/ft.png", ft, px_per_unit=1)
 display(f2)
 # ft
 

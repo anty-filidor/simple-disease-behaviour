@@ -21,7 +21,7 @@ julia --project=. -e 'using Pkg; Pkg.instantiate()'
 
 ## Output
 
-Plots are saved to `simple-disease-behaviour-plots/`:
+Plots are saved to `figs/` (configurable via `figs_path` in `src/params.jl`):
 - `f1.png` — phase portrait (x vs I)
 - `ft.png` — time series of I
 
