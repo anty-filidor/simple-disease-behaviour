@@ -14,6 +14,8 @@ include("src/trajectories.jl")
 # --- Equilibria ---
 
 Equilibria = find_equilibria(R0, p0, c0)
+dfe_vals, _, dfe_stable = find_dfe(R0, p0, c0)
+println("DFE stable: $dfe_stable, eigenvalues: $dfe_vals")
 
 # --- Initial conditions ---
 
