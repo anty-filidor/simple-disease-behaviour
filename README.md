@@ -7,6 +7,10 @@ Simulates a coupled SIS epidemic and behavioural dynamics system. Two state vari
 
 Behaviour influences transmission (via `x` in the force of infection), and infection pressure shifts behaviour adoption. The model is analysed for equilibria and simulated as a continuous dynamical system.
 
+## Model derivation
+
+![Whiteboard derivation of the model ODEs, equilibrium conditions, and stability criterion](.model_derivation.jpeg)
+
 ## How to run
 
 ```julia
