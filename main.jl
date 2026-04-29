@@ -1,9 +1,3 @@
-import Pkg
-Pkg.add("DynamicalSystems")
-Pkg.add("OrdinaryDiffEq")
-Pkg.add("GLMakie")
-Pkg.add("Roots")
-
 using DynamicalSystems
 using OrdinaryDiffEq
 using GLMakie

@@ -10,11 +10,14 @@ Behaviour influences transmission (via `x` in the force of infection), and infec
 ## How to run
 
 ```julia
-julia main.jl
+julia --project=. main.jl
 ```
 
-Requires Julia with the following packages (installed automatically on first run):
-`DynamicalSystems`, `OrdinaryDiffEq`, `GLMakie`, `Roots`
+Dependencies are declared in `Project.toml` and pinned in `Manifest.toml`. To instantiate the environment on a fresh machine:
+
+```julia
+julia --project=. -e 'using Pkg; Pkg.instantiate()'
+```
 
 ## Output
 
