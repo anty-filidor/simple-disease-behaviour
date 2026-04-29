@@ -1,0 +1,2 @@
+module SimpleDiseaseBehaviour
+end

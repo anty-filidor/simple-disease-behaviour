@@ -13,7 +13,12 @@ repos:
     rev: v3.1.0
     hooks:
       - id: prettier
-        args: ["--ignore-unknown", "--config=.pc_config/.prettierrc", "--ignore-path=.pc_config/.prettierignore"]
+        args:
+          [
+            "--ignore-unknown",
+            "--config=.pc_config/.prettierrc",
+            "--ignore-path=.pc_config/.prettierignore",
+          ]
 
   - repo: local
     hooks:
@@ -25,7 +30,7 @@ repos:
         pass_filenames: false
       - id: julia-tests
         name: Julia tests
-        entry: julia --project=. -e 'using Pkg; Pkg.test()'
+        entry: julia --project=. test/runtests.jl
         language: system
         files: \.jl$
         pass_filenames: false

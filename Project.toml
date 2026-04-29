@@ -5,12 +5,14 @@ version = "0.1.0"
 [deps]
 DynamicalSystems = "61744808-ddfa-5f27-97ff-6e42cc95d634"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 
 [compat]
 DynamicalSystems = "3"
 GLMakie = "0.13"
+JuliaFormatter = "2.3.0"
 OrdinaryDiffEq = "6"
 Roots = "2"
 julia = "1.12"
