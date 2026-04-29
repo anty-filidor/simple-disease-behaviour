@@ -62,7 +62,8 @@ function find_equilibria(R, p, c)
     for x in roots
         z = (R*x - 1) / (R*x)
         z > 0 || continue
-        values, _ = compute_eigenvalues_jacob(x, z, R, p, c)
+        values, vectors = compute_eigenvalues_jacob(x, z, R, p, c)
+        println("x: $x, z: $z, Eigenvalues: $values, Eigenvector: $vectors")
         real_values = real(values)
         if all(real_values .<= 0)
             push!(equilibria, (x, z, true))

@@ -8,6 +8,8 @@ function my_trajectory(x0, I, r, p, c)
         x = SOL[t0:end, 1]
         I = SOL[t0:end, 2]
         t = t[t0:end]
+        println(size(I))
+        println(size(t))
         return [x, I, t]
     end
 end

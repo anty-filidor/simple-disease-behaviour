@@ -57,6 +57,7 @@ for ind in filter(i -> isassigned(data, i), 1:length(data))
     )
 end
 
+println(Equilibria)
 if length(Equilibria) > 0
     scatter!(
         ax,
