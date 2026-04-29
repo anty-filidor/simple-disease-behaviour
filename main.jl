@@ -52,108 +52,106 @@ end
 
 f2 = Figure(size = (600, 450))
 
-ax = Axis(f2[1, 1],
-    title = "Experiment R = $R0, p = $p0, c=$c0",
-    ylabel = "I",
-    xlabel = "x",
-)
+ax =
+    Axis(f2[1, 1], title = "Experiment R = $R0, p = $p0, c=$c0", ylabel = "I", xlabel = "x")
 
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
-    cs = sqrt.((x[2:end] - x[1:end-1]).^2 .+ (I[2:end] - I[1:end-1]).^2)
-    x = x[1:end-1]
-    I = I[1:end-1]
-    lines!(ax,
-            x,
-            I,
-            colormap=cgrad(Makie.to_colormap(:Reds)[4:9]),
-            alpha=0.3,
-            color=cs,
-            overdraw = true,
-            )
+    cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
+    x = x[1:(end-1)]
+    I = I[1:(end-1)]
+    lines!(
+        ax,
+        x,
+        I,
+        colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
+        alpha = 0.3,
+        color = cs,
+        overdraw = true,
+    )
 end
 
 println(Equilibria)
 if length(Equilibria) > 0
-    scatter!(ax,
+    scatter!(
+        ax,
         Equilibria[1][1],
         Equilibria[1][2],
-        color=:red,
+        color = :red,
         marker = Equilibria[1][3] == true ? :circle : :star4,
-        markersize=20.0,
-        alpha=1.0,
-        strokecolor=:white,
-        strokewidth=1,
-        label="EE1")
+        markersize = 20.0,
+        alpha = 1.0,
+        strokecolor = :white,
+        strokewidth = 1,
+        label = "EE1",
+    )
 end
 
 if length(Equilibria) > 1
-    scatter!(ax,
+    scatter!(
+        ax,
         Equilibria[2][1],
         Equilibria[2][2],
-        color=:blue,
+        color = :blue,
         marker = Equilibria[1][3] == true ? :circle : :star4,
-        markersize=20.0,
-        alpha=1.0,
-        strokecolor=:white,
-        strokewidth=1,
-        label="EE1")
+        markersize = 20.0,
+        alpha = 1.0,
+        strokecolor = :white,
+        strokewidth = 1,
+        label = "EE1",
+    )
 end
 
 mkpath(figs_path)
-save("$figs_path/f1.png", f2, px_per_unit=1)
+save("$figs_path/f1.png", f2, px_per_unit = 1)
 display(f2)
 
 # --- Time series (I vs t) ---
 
 ft = Figure(size = (600, 450))
 
-ax = Axis(ft[1, 1],
-    title = "Experiment R = $R0, p = $p0, c=$c0",
-    ylabel = "I",
-    xlabel = "t",
-)
+ax =
+    Axis(ft[1, 1], title = "Experiment R = $R0, p = $p0, c=$c0", ylabel = "I", xlabel = "t")
 
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
-    cs = sqrt.((x[2:end] - x[1:end-1]).^2 .+ (I[2:end] - I[1:end-1]).^2)
-    x = x[1:end-1]
-    I = I[1:end-1]
-    lines!(ax,
-            I,
-            colormap=cgrad(Makie.to_colormap(:Reds)[4:9]),
-            alpha=0.3,
-            color=cs,
-            overdraw = true,
-            )
+    cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
+    x = x[1:(end-1)]
+    I = I[1:(end-1)]
+    lines!(
+        ax,
+        I,
+        colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
+        alpha = 0.3,
+        color = cs,
+        overdraw = true,
+    )
 end
 
-save("$figs_path/ft.png", ft, px_per_unit=1)
+save("$figs_path/ft.png", ft, px_per_unit = 1)
 display(f2)
 # ft
 
 ft = Figure(size = (600, 450))
 
-ax = Axis(ft[1, 1],
-    title = "Experiment R = $R0, p = $p0, c=$c0",
-    ylabel = "I",
-    xlabel = "t",
-)
+ax =
+    Axis(ft[1, 1], title = "Experiment R = $R0, p = $p0, c=$c0", ylabel = "I", xlabel = "t")
 
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
-    cs = sqrt.((x[2:end] - x[1:end-1]).^2 .+ (I[2:end] - I[1:end-1]).^2)
-    x = x[1:end-1]
-    I = I[1:end-1]
-    lines!(ax,
-            I,
-            colormap=cgrad(Makie.to_colormap(:Reds)[4:9]),
-            alpha=0.3,
-            color=cs,
-            overdraw = true,
-            )
+    cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
+    x = x[1:(end-1)]
+    I = I[1:(end-1)]
+    lines!(
+        ax,
+        I,
+        colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
+        alpha = 0.3,
+        color = cs,
+        overdraw = true,
+    )
 end
 # display(ft)

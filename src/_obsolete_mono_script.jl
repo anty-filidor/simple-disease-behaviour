@@ -34,7 +34,7 @@ function jacob(x, z)
         2*p*(1-x)*(2*x-(1+z)/2) - 2*p*(x*(x-(1+z)/2) + c*(1-z) / (2*p)),
         -p*(1+x)*(x+c/p),
         R*z*(1-z),
-        R*x*(1-2*z) - 1
+        R*x*(1-2*z) - 1,
     ]
     J = reshape(J, 2, 2)
     return J
@@ -50,12 +50,7 @@ end
 
 function calculate_values(R, p, c)
     # Define the polynomial coefficients
-    poly_coeff = [
-        -c/p,
-        -1,
-        2*R,
-        -2*R
-    ]
+    poly_coeff = [-c/p, -1, 2*R, -2*R]
     f(x) = poly_coeff[1] + poly_coeff[2] * x + poly_coeff[3] * x^2 + poly_coeff[4] * x^3
     # Solve the polynomial
     roots = find_zeros(f, 0, 1)
@@ -101,7 +96,7 @@ end
 Equilibria = find_equilibria(R0, p0, c0)
 
 function cond(x, I)
-    if x >= 0 && x <= 1 && I >= 0 && I <= 1 && I > 0 
+    if x >= 0 && x <= 1 && I >= 0 && I <= 1 && I > 0
         return true
     else
         return false
@@ -125,7 +120,7 @@ function my_trajectory(x0, I, r, p, c)
         X0 = [x0 I]
         pars = [r p c]
         dynamics = ContinuousDynamicalSystem(dynamics_rule_si, X0, pars; diffeq)
-        SOL, t = trajectory(dynamics, T; Ttr=Ttr, Δt=sampling_time)
+        SOL, t = trajectory(dynamics, T; Ttr = Ttr, Δt = sampling_time)
         t0 = Int((Ttr + 1) / sampling_time)
         x = SOL[t0:end, 1]
         I = SOL[t0:end, 2]
@@ -140,7 +135,7 @@ function my_trajectory_no_condition(x0, I, r, p, c)
     X0 = [x0 I]
     pars = [r p c]
     dynamics = ContinuousDynamicalSystem(dynamics_rule_si, X0, pars; diffeq)
-    SOL, t = trajectory(dynamics, T; Δt=sampling_time, Ttr=Ttr)
+    SOL, t = trajectory(dynamics, T; Δt = sampling_time, Ttr = Ttr)
     x = SOL[:, 1]
     I = SOL[:, 2]
     println(size(I))
@@ -182,7 +177,8 @@ end
 
 f2 = Figure(size = (600, 450))
 
-ax = Axis(f2[1, 1],
+ax = Axis(
+    f2[1, 1],
     title = "Experiment R = $R0, p = $p0, c=$c0",
     ylabel = "I",
     xlabel = "x",
@@ -197,56 +193,62 @@ ax = Axis(f2[1, 1],
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
-    cs = sqrt.((x[2:end] - x[1:end-1]).^2 .+ (I[2:end] - I[1:end-1]).^2)
-    x = x[1:end-1]
-    I = I[1:end-1]
-    lines!(ax,
-            x,
-            I,
-            colormap=cgrad(Makie.to_colormap(:Reds)[4:9]),
-            alpha=0.3,
-            color=cs,
-            overdraw = true,
-            # label="DFE1 trajectories"
-            )
+    cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
+    x = x[1:(end-1)]
+    I = I[1:(end-1)]
+    lines!(
+        ax,
+        x,
+        I,
+        colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
+        alpha = 0.3,
+        color = cs,
+        overdraw = true,
+        # label="DFE1 trajectories"
+    )
 end
 
 println(Equilibria)
 if length(Equilibria) > 0
-    scatter!(ax,
+    scatter!(
+        ax,
         Equilibria[1][1],
         Equilibria[1][2],
-        color=:red,
+        color = :red,
         marker = Equilibria[1][3] == true ? :circle : :star4,
-        markersize=20.0,
-        alpha=1.0,
-        strokecolor=:white,
-        strokewidth=1,
-        label="EE1")
+        markersize = 20.0,
+        alpha = 1.0,
+        strokecolor = :white,
+        strokewidth = 1,
+        label = "EE1",
+    )
 end
 
 
 if length(Equilibria) > 1
-    scatter!(ax,
+    scatter!(
+        ax,
         Equilibria[2][1],
         Equilibria[2][2],
-        color=:blue,
+        color = :blue,
         marker = Equilibria[1][3] == true ? :circle : :star4,
-        markersize=20.0,
-        alpha=1.0,
-        strokecolor=:white,
-        strokewidth=1,
-        label="EE1")
+        markersize = 20.0,
+        alpha = 1.0,
+        strokecolor = :white,
+        strokewidth = 1,
+        label = "EE1",
+    )
 end
 
 out_path = "simple-disease-behavior-plots"
 mkpath(out_path)
-save(f"./{out_path}/f1.png", f2, px_per_unit=1)
+save(f"./{out_path}/f1.png", f2, px_per_unit = 1)
 display(f2)
 
 ft = Figure(size = (600, 450))
 
-ax = Axis(ft[1, 1],
+ax = Axis(
+    ft[1, 1],
     title = "Experiment R = $R0, p = $p0, c=$c0",
     ylabel = "I",
     xlabel = "t",
@@ -261,26 +263,28 @@ ax = Axis(ft[1, 1],
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
-    cs = sqrt.((x[2:end] - x[1:end-1]).^2 .+ (I[2:end] - I[1:end-1]).^2)
-    x = x[1:end-1]
-    I = I[1:end-1]
-    lines!(ax,
-            I,
-            colormap=cgrad(Makie.to_colormap(:Reds)[4:9]),
-            alpha=0.3,
-            color=cs,
-            overdraw = true,
-            # label="DFE1 trajectories"
-            )
+    cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
+    x = x[1:(end-1)]
+    I = I[1:(end-1)]
+    lines!(
+        ax,
+        I,
+        colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
+        alpha = 0.3,
+        color = cs,
+        overdraw = true,
+        # label="DFE1 trajectories"
+    )
 end
 
-save(f"./{out_path}/ft.png", ft, px_per_unit=1)
+save(f"./{out_path}/ft.png", ft, px_per_unit = 1)
 display(f2)
 # ft
 
 ft = Figure(size = (600, 450))
 
-ax = Axis(ft[1, 1],
+ax = Axis(
+    ft[1, 1],
     title = "Experiment R = $R0, p = $p0, c=$c0",
     ylabel = "I",
     xlabel = "t",
@@ -295,16 +299,17 @@ ax = Axis(ft[1, 1],
 for ind in filter(i -> isassigned(data, i), 1:length(data))
     x = data[ind][1]
     I = data[ind][2]
-    cs = sqrt.((x[2:end] - x[1:end-1]).^2 .+ (I[2:end] - I[1:end-1]).^2)
-    x = x[1:end-1]
-    I = I[1:end-1]
-    lines!(ax,
-            I,
-            colormap=cgrad(Makie.to_colormap(:Reds)[4:9]),
-            alpha=0.3,
-            color=cs,
-            overdraw = true,
-            # label="DFE1 trajectories"
-            )
+    cs = sqrt.((x[2:end] - x[1:(end-1)]) .^ 2 .+ (I[2:end] - I[1:(end-1)]) .^ 2)
+    x = x[1:(end-1)]
+    I = I[1:(end-1)]
+    lines!(
+        ax,
+        I,
+        colormap = cgrad(Makie.to_colormap(:Reds)[4:9]),
+        alpha = 0.3,
+        color = cs,
+        overdraw = true,
+        # label="DFE1 trajectories"
+    )
 end
 # display(ft)

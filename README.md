@@ -11,39 +11,49 @@ Behaviour influences transmission (via `x` in the force of infection), and infec
 
 ![Whiteboard derivation of the model ODEs, equilibrium conditions, and stability criterion](.model_derivation.jpeg)
 
-## How to run
+## Setup
 
-```julia
-julia --project=. main.jl
+Install Julia dependencies:
+
+```bash
+julia --project=. -e 'using Pkg; Pkg.instantiate()'
 ```
 
-Dependencies are declared in `Project.toml` and pinned in `Manifest.toml`. To instantiate the environment on a fresh machine:
+Set up pre-commit hooks (requires Python):
 
-```julia
-julia --project=. -e 'using Pkg; Pkg.instantiate()'
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+## How to run
+
+```bash
+julia --project=. main.jl
 ```
 
 ## Output
 
 Plots are saved to `figs/` (configurable via `figs_path` in `src/params.jl`):
+
 - `f1.png` — phase portrait (x vs I)
 - `ft.png` — time series of I
 
 ## File structure
 
-| File | Purpose |
-|---|---|
-| `main.jl` | Entry point: loads packages, runs simulation, produces plots |
-| `src/params.jl` | Model parameters (R₀, p, c, simulation time, solver settings) |
-| `src/model.jl` | ODE right-hand side and initial condition validator |
-| `src/equilibria.jl` | Jacobian, eigenvalue analysis, equilibrium finder |
-| `src/trajectories.jl` | Trajectory simulation wrappers |
+| File                  | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `main.jl`             | Entry point: loads packages, runs simulation, produces plots  |
+| `src/params.jl`       | Model parameters (R₀, p, c, simulation time, solver settings) |
+| `src/model.jl`        | ODE right-hand side and initial condition validator           |
+| `src/equilibria.jl`   | Jacobian, eigenvalue analysis, equilibrium finder             |
+| `src/trajectories.jl` | Trajectory simulation wrappers                                |
 
 ## Key parameters (`params.jl`)
 
-| Parameter | Value | Meaning |
-|---|---|---|
-| `R0` | 3.0 | Basic reproduction number |
-| `p0` | 1.05 | Imitation rate |
-| `c0` | 0.19 | Spontaneous behaviour switching rate |
-| `T` | 100 | Simulation time |
+| Parameter | Value | Meaning                              |
+| --------- | ----- | ------------------------------------ |
+| `R0`      | 3.0   | Basic reproduction number            |
+| `p0`      | 1.05  | Imitation rate                       |
+| `c0`      | 0.19  | Spontaneous behaviour switching rate |
+| `T`       | 100   | Simulation time                      |

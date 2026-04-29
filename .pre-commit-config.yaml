@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=5000"]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        args:
+          [
+            "--ignore-unknown",
+            "--config=.pc_config/.prettierrc",
+            "--ignore-path=.pc_config/.prettierignore",
+          ]
+
+  - repo: local
+    hooks:
+      - id: julia-format
+        name: JuliaFormatter
+        entry: julia --project=. -e 'using JuliaFormatter; format(".", verbose=true)'
+        language: system
+        files: \.jl$
+        pass_filenames: false
+      - id: julia-tests
+        name: Julia tests
+        entry: julia --project=. test/runtests.jl
+        language: system
+        files: \.jl$
+        pass_filenames: false
