@@ -6,7 +6,7 @@ function jacob(x, z)
         2*p*(1-x)*(2*x-(1+z)/2) - 2*p*(x*(x-(1+z)/2) + c*(1-z) / (2*p)),
         -p*(1+x)*(x+c/p),
         R*z*(1-z),
-        R*x*(1-2*z) - 1
+        R*x*(1-2*z) - 1,
     ]
     J = reshape(J, 2, 2)
     return J
@@ -22,12 +22,7 @@ end
 
 function calculate_values(R, p, c)
     # Define the polynomial coefficients
-    poly_coeff = [
-        -c/p,
-        -1,
-        2*R,
-        -2*R
-    ]
+    poly_coeff = [-c/p, -1, 2*R, -2*R]
     f(x) = poly_coeff[1] + poly_coeff[2] * x + poly_coeff[3] * x^2 + poly_coeff[4] * x^3
     # Solve the polynomial
     roots = find_zeros(f, 0, 1)

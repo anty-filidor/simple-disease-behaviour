@@ -1,2 +1,1 @@
-module SimpleDiseaseBehaviour
-end
+module SimpleDiseaseBehaviour end
