@@ -27,10 +27,10 @@ Plots are saved to `simple-disease-behaviour-plots/`:
 | File | Purpose |
 |---|---|
 | `main.jl` | Entry point: loads packages, runs simulation, produces plots |
-| `params.jl` | Model parameters (R₀, p, c, simulation time, solver settings) |
-| `model.jl` | ODE right-hand side and initial condition validator |
-| `equilibria.jl` | Jacobian, eigenvalue analysis, equilibrium finder |
-| `trajectories.jl` | Trajectory simulation wrappers |
+| `src/params.jl` | Model parameters (R₀, p, c, simulation time, solver settings) |
+| `src/model.jl` | ODE right-hand side and initial condition validator |
+| `src/equilibria.jl` | Jacobian, eigenvalue analysis, equilibrium finder |
+| `src/trajectories.jl` | Trajectory simulation wrappers |
 
 ## Key parameters (`params.jl`)
 

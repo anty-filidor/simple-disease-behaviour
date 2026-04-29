@@ -12,10 +12,10 @@ using Random
 using Roots
 using LinearAlgebra
 
-include("params.jl")
-include("model.jl")
-include("equilibria.jl")
-include("trajectories.jl")
+include("src/params.jl")
+include("src/model.jl")
+include("src/equilibria.jl")
+include("src/trajectories.jl")
 
 # --- Equilibria ---
 
