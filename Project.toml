@@ -1,6 +1,6 @@
 name = "SimpleDiseaseBehaviour"
 uuid = "3bb4e52d-19e9-4fb6-8265-f259cf2d572b"
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 DynamicalSystems = "61744808-ddfa-5f27-97ff-6e42cc95d634"
@@ -8,6 +8,12 @@ GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
+
+[extras]
+Test = "8dfed614-e22c-358a-bc84-b0a5eff01de8"
+
+[targets]
+test = ["Test"]
 
 [compat]
 DynamicalSystems = "3"
