@@ -2,7 +2,7 @@
 
 Simulates a coupled SIS epidemic and behavioural dynamics system. Two state variables evolve together:
 
-- **x** — fraction of the population adopting a protective behaviour (e.g. social distancing)
+- **x** — fraction of the population adopting risky/normal behaviour (non-protective)
 - **I** — fraction of the population infected
 
 Behaviour influences transmission (via `x` in the force of infection), and infection pressure shifts behaviour adoption. The model is analysed for equilibria and simulated as a continuous dynamical system.
