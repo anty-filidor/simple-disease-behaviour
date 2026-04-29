@@ -118,6 +118,18 @@ Before making any other changes on a new branch:
 
 ---
 
+## Pre-commit
+
+Run before every commit:
+
+```bash
+pre-commit run --files <changed files>
+```
+
+Hooks configured: trailing whitespace, end-of-file fixer, YAML check, case-conflict check, large-file check, and JuliaFormatter (auto-formats `.jl` files in place).
+
+---
+
 ## Security
 
 - Do not hardcode secrets, tokens, or passwords in source files — use environment variables
