@@ -28,32 +28,53 @@ pre-commit install
 
 ## How to run
 
+Trajectory simulation:
+
 ```bash
 julia --project=. main.jl
 ```
 
+Hopf bifurcation analysis:
+
+```bash
+julia --project=. hopf_analysis.jl
+```
+
+Both scripts share the parameters defined in `src/params.jl`.
+
 ## Output
 
-Plots are saved to `figs/` (configurable via `figs_path` in `src/params.jl`):
+All plots are saved to `figs/` (configurable via `figs_path` in `src/params.jl`).
+
+`main.jl`:
 
 - `f1.png` — phase portrait (x vs I)
 - `ft.png` — time series of I
 
+`hopf_analysis.jl`:
+
+- `hopf_phase_Rd.png` — (R, d) parameter plane heatmap of max tr(J), with the Hopf contour and the default operating point marked
+- `hopf_phase_Rp.png` — Hopf critical curve p_c(R) and limit-cycle frequency ω(R) at fixed d = d₀
+
 ## File structure
 
-| File                  | Purpose                                                       |
-| --------------------- | ------------------------------------------------------------- |
-| `main.jl`             | Entry point: loads packages, runs simulation, produces plots  |
-| `src/params.jl`       | Model parameters (R₀, p, c, simulation time, solver settings) |
-| `src/model.jl`        | ODE right-hand side and initial condition validator           |
-| `src/equilibria.jl`   | Jacobian, eigenvalue analysis, equilibrium finder             |
-| `src/trajectories.jl` | Trajectory simulation wrappers                                |
+| File                  | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `main.jl`             | Entry point: loads packages, runs simulation, produces plots         |
+| `hopf_analysis.jl`    | Hopf bifurcation analysis: parameter-plane figures                   |
+| `src/params.jl`       | Shared model parameters (R₀, p, c, simulation time, solver settings) |
+| `src/model.jl`        | ODE right-hand side and initial condition validator                  |
+| `src/equilibria.jl`   | Jacobian, eigenvalue analysis, equilibrium finder                    |
+| `src/hopf.jl`         | Hopf bifurcation utilities: critical p_c and frequency ω             |
+| `src/trajectories.jl` | Trajectory simulation wrappers                                       |
 
-## Key parameters (`params.jl`)
+## Key parameters (`src/params.jl`)
+
+These parameters are used by both `main.jl` and `hopf_analysis.jl`.
 
 | Parameter | Value | Meaning                              |
 | --------- | ----- | ------------------------------------ |
 | `R0`      | 3.0   | Basic reproduction number            |
 | `p0`      | 1.05  | Imitation rate                       |
 | `c0`      | 0.19  | Spontaneous behaviour switching rate |
-| `T`       | 100   | Simulation time                      |
+| `T`       | 100   | Simulation time (main.jl only)       |
