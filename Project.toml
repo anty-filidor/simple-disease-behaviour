@@ -1,6 +1,6 @@
 name = "SimpleDiseaseBehaviour"
 uuid = "3bb4e52d-19e9-4fb6-8265-f259cf2d572b"
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 DynamicalSystems = "61744808-ddfa-5f27-97ff-6e42cc95d634"
