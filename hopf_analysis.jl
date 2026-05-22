@@ -12,32 +12,37 @@ d0 = c0 / p0   # d = c/p: ratio of spontaneous switching to imitation, used as t
 println("Default parameters: R₀=$R0, p₀=$p0, c₀=$c0, d₀=$(round(d0, digits=4))")
 
 # ─── Figure A: (R, d) heatmap ────────────────────────────────────────────────
-# Sweep (R, d) at fixed p = p₀ and colour each cell by the maximum tr(J) across
-# all endemic equilibria.  tr(J) > 0 → unstable (oscillatory); tr(J) < 0 → stable;
-# cells with no endemic equilibrium are left as NaN and rendered in grey.
+# Sweep (R, d) at fixed p = p₀ and colour each cell by max Re(λ) across all
+# endemic equilibria, where λ are eigenvalues of J.
+# max Re(λ) > 0 → unstable;  max Re(λ) < 0 → stable.
+# Cells with no endemic equilibrium are left as NaN and rendered in grey.
+#
+# NOTE: tr(J) alone is NOT a valid stability diagnostic.  A saddle point has
+# det(J) < 0 (eigenvalues of opposite sign), so one eigenvalue is positive even
+# when tr(J) < 0.  Using max Re(λ) correctly identifies saddles as unstable.
 
 NR, Nd = 400, 400
 R_grid = range(2.0, 8.0, length = NR)   # reproduction number axis
 d_grid = range(0.01, 0.30, length = Nd) # d = c/p axis
 
-tr_max = fill(NaN32, NR, Nd)  # preallocate; NaN flags cells with no endemic equilibrium
+max_re_eig = fill(NaN32, NR, Nd)  # preallocate; NaN flags cells with no endemic equilibrium
 
-println("Computing tr(J) heatmap on $(NR)×$(Nd) grid…")
+println("Computing max Re(λ) heatmap on $(NR)×$(Nd) grid…")
 for j in eachindex(d_grid)
     d = d_grid[j]
     c = p0 * d   # recover c from d = c/p at the fixed p₀
     for i in eachindex(R_grid)
         R = R_grid[i]
         xs = calculate_values(R, p0, c)   # x-coordinates of all endemic equilibria
-        tr_vals = Float64[]
+        re_vals = Float64[]
         for x in xs
             z = (R*x - 1) / (R*x)   # corresponding I* from dI/dt = 0
             z > 0 || continue         # skip spurious roots with no positive prevalence
             J = jacob(x, z, R, p0, c)
-            push!(tr_vals, J[1, 1] + J[2, 2])   # tr(J) = J₁₁ + J₂₂
+            push!(re_vals, maximum(real.(eigvals(J))))   # max Re(λ): positive = unstable
         end
-        isempty(tr_vals) && continue              # no endemic equilibrium at this (R, d)
-        tr_max[i, j] = Float32(maximum(tr_vals)) # take the most-unstable equilibrium per cell
+        isempty(re_vals) && continue                       # no endemic equilibrium at this (R, d)
+        max_re_eig[i, j] = Float32(maximum(re_vals))      # take the most-unstable equilibrium per cell
     end
 end
 
@@ -46,27 +51,27 @@ ax_a = Axis(
     fig_a[1, 1],
     xlabel = "R",
     ylabel = "d = C/p",
-    title = "Max tr(J) at endemic equilibria  (p = p₀ = $p0)",
+    title = "Max Re(λ) at endemic equilibria  (p = p₀ = $p0)",
 )
 
 hm = heatmap!(
     ax_a,
     R_grid,
     d_grid,
-    tr_max,
+    max_re_eig,
     colormap = Reverse(:RdBu),
     colorrange = (-1, 1),
     nan_color = :lightgray,
 )
 
-# tr = 0 Hopf contour — replace NaN with a large negative value so the contour
-# algorithm never interpolates across the disease-free (grey) region.
-tr_for_contour = replace(tr_max, NaN32 => -2.0f0)
+# Re(λ) = 0 stability boundary — replace NaN with a large negative value so the
+# contour algorithm never interpolates across the disease-free (grey) region.
+stability_for_contour = replace(max_re_eig, NaN32 => -2.0f0)
 contour!(
     ax_a,
     R_grid,
     d_grid,
-    tr_for_contour,
+    stability_for_contour,
     levels = [0.0],
     color = :black,
     linewidth = 2,
@@ -84,7 +89,7 @@ scatter!(
     label = "(R₀, d₀)",
 )
 
-Colorbar(fig_a[1, 2], hm, label = "max tr(J)")
+Colorbar(fig_a[1, 2], hm, label = "max Re(λ)")
 axislegend(ax_a, position = :rb)
 
 mkpath(figs_path)
