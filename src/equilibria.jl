@@ -1,65 +1,74 @@
-function jacob(x, z)
-    R = R0
-    p = p0
-    c = c0
+"""
+    jacob(x, z, R, p, c) -> Matrix
+
+Return the 2×2 Jacobian of the system evaluated at state `(x, z)`.
+"""
+function jacob(x, z, R, p, c)
     J = [
-        2*p*(1-x)*(2*x-(1+z)/2) - 2*p*(x*(x-(1+z)/2) + c*(1-z) / (2*p)),
-        -p*(1+x)*(x+c/p),
+        -p*(1 - 6x + 6x^2 + z - 2x*z) - c*(1-z),
         R*z*(1-z),
-        R*x*(1-2*z) - 1,
+        -(1-x)*(p*x + c),
+        R*x*(1-2z) - 1,
     ]
     J = reshape(J, 2, 2)
     return J
 end
 
-function compute_eigenvalues_jacob(x, z)
-    J = jacob(x, z)
+"""
+    compute_eigenvalues_jacob(x, z, R, p, c) -> Tuple
+
+Return eigenvalues and eigenvectors of the Jacobian at state `(x, z)`.
+"""
+function compute_eigenvalues_jacob(x, z, R, p, c)
+    J = jacob(x, z, R, p, c)
     e = eigen(J)
     vals = e.values
     vectors = e.vectors
     return vals, vectors
 end
 
+"""
+    calculate_values(R, p, c) -> Vector{Float64}
+
+Return all x-coordinates of endemic equilibria in (0, 1) for the given parameters.
+"""
 function calculate_values(R, p, c)
-    # Define the polynomial coefficients
     poly_coeff = [-c/p, -1, 2*R, -2*R]
     f(x) = poly_coeff[1] + poly_coeff[2] * x + poly_coeff[3] * x^2 + poly_coeff[4] * x^3
-    # Solve the polynomial
-    roots = find_zeros(f, 0, 1)
-    # Filter real roots
-    real_roots = real(roots[abs.(imag.(roots)) .< 1e-17])
-    return real_roots
+    return find_zeros(f, 0, 1)
 end
 
-function is_valid_solution(x, R, p, c)
+"""
+    find_dfe(R, p, c) -> Tuple
 
-    # Check for NaN or Inf values
-    if any(isnan.([x])) || any(isinf.([x]))
-        return false
-    end
+Return `(eigenvalues, eigenvectors, is_stable)` for the disease-free equilibrium (x=1, I=0).
 
-    # Check positivity
-    if x < 0 || x > 1
-        return false
-    end
-
-    return true
+The DFE is stable when R < 1 (eigenvalue R−1 < 0) and unstable otherwise.
+"""
+function find_dfe(R, p, c)
+    vals, vectors = compute_eigenvalues_jacob(1.0, 0.0, R, p, c)
+    is_stable = all(real.(vals) .<= 0)
+    return vals, vectors, is_stable
 end
 
+"""
+    find_equilibria(R, p, c) -> Vector
+
+Return all endemic equilibria as `[x*, I*, is_stable]` for the given parameters.
+"""
 function find_equilibria(R, p, c)
     roots = calculate_values(R, p, c)
     equilibria = []
     for x in roots
-        if is_valid_solution(x, R, p, c)
-            z = (R*x-1)/(R*x)
-            values, vectors = compute_eigenvalues_jacob(x, z)
-            println("x: $x, z: $z, Eigenvalues: $values, Eigenvector: $vectors")
-            real_values = real(values)
-            if all(real_values .<= 0)
-                push!(equilibria, [x, z, true])
-            else
-                push!(equilibria, [x, z, false])
-            end
+        z = (R*x - 1) / (R*x)
+        z > 0 || continue
+        values, vectors = compute_eigenvalues_jacob(x, z, R, p, c)
+        println("x: $x, z: $z, Eigenvalues: $values, Eigenvector: $vectors")
+        real_values = real(values)
+        if all(real_values .<= 0)
+            push!(equilibria, (x, z, true))
+        else
+            push!(equilibria, (x, z, false))
         end
     end
     return equilibria
