@@ -12,14 +12,15 @@ d0 = c0 / p0   # d = c/p: ratio of spontaneous switching to imitation, used as t
 println("Default parameters: R₀=$R0, p₀=$p0, c₀=$c0, d₀=$(round(d0, digits=4))")
 
 # ─── Figure A: (R, d) heatmap ────────────────────────────────────────────────
-# Sweep (R, d) at fixed p = p₀ and colour each cell by max Re(λ) across all
-# endemic equilibria, where λ are eigenvalues of J.
-# max Re(λ) > 0 → unstable;  max Re(λ) < 0 → stable.
-# Cells with no endemic equilibrium are left as NaN and rendered in grey.
+# For each (R, d) cell, compute max Re(λ) for every endemic equilibrium, then
+# take the MINIMUM over equilibria.  This answers: does a stable EE exist here?
 #
-# NOTE: tr(J) alone is NOT a valid stability diagnostic.  A saddle point has
-# det(J) < 0 (eigenvalues of opposite sign), so one eigenvalue is positive even
-# when tr(J) < 0.  Using max Re(λ) correctly identifies saddles as unstable.
+#   min < 0  →  at least one stable endemic equilibrium (blue)
+#   min > 0  →  all endemic equilibria are unstable         (red) → stable limit cycle
+#
+# NOTE: tr(J) is NOT a valid stability diagnostic.  A saddle has det(J) < 0, so
+# one eigenvalue is positive even when tr(J) < 0.  max Re(λ) per equilibrium,
+# then min over equilibria, gives the correct picture.
 
 NR, Nd = 400, 400
 R_grid = range(2.0, 8.0, length = NR)   # reproduction number axis
@@ -27,7 +28,7 @@ d_grid = range(0.01, 0.30, length = Nd) # d = c/p axis
 
 max_re_eig = fill(NaN32, NR, Nd)  # preallocate; NaN flags cells with no endemic equilibrium
 
-println("Computing max Re(λ) heatmap on $(NR)×$(Nd) grid…")
+println("Computing stability heatmap on $(NR)×$(Nd) grid…")
 for j in eachindex(d_grid)
     d = d_grid[j]
     c = p0 * d   # recover c from d = c/p at the fixed p₀
@@ -42,7 +43,7 @@ for j in eachindex(d_grid)
             push!(re_vals, maximum(real.(eigvals(J))))   # max Re(λ): positive = unstable
         end
         isempty(re_vals) && continue                       # no endemic equilibrium at this (R, d)
-        max_re_eig[i, j] = Float32(maximum(re_vals))      # take the most-unstable equilibrium per cell
+        max_re_eig[i, j] = Float32(minimum(re_vals))      # most-stable EE: negative = stable fixed point exists, positive = all EEs unstable → limit cycle
     end
 end
 
@@ -51,7 +52,7 @@ ax_a = Axis(
     fig_a[1, 1],
     xlabel = "R",
     ylabel = "d = C/p",
-    title = "Max Re(λ) at endemic equilibria  (p = p₀ = $p0)",
+    title = "Stability of most-stable EE  (p = p₀ = $p0)",
 )
 
 hm = heatmap!(
@@ -89,7 +90,7 @@ scatter!(
     label = "(R₀, d₀)",
 )
 
-Colorbar(fig_a[1, 2], hm, label = "max Re(λ)")
+Colorbar(fig_a[1, 2], hm, label = "min Re(λ_max)")
 axislegend(ax_a, position = :rb)
 
 mkpath(figs_path)
