@@ -4,11 +4,17 @@
 Return the 2×2 Jacobian of the system evaluated at state `(x, z)`.
 """
 function jacob(x, z, R, p, c)
+    # ∂ẋ/∂x: differentiate -p(1+z)x(1-x)²+p(1-z)(1-x)x²+c(1-z)(1-x) term by term,
+    #        then expand and collect → -p(1-6x+6x²+z-2xz) - c(1-z)
+    # ∂İ/∂x: differentiate R·x·z·(1-z)-z w.r.t. x → R·z·(1-z)
+    # ∂ẋ/∂I: each imitation term contributes -p·x·(1-x)², -p·(1-x)·x², -c·(1-x)
+    #        → factor out -(1-x): -(1-x)(p·x + c)
+    # ∂İ/∂I: differentiate R·x·z·(1-z)-z w.r.t. z → R·x·(1-2z) - 1
     J = [
-        -p*(1 - 6x + 6x^2 + z - 2x*z) - c*(1-z),
-        R*z*(1-z),
-        -(1-x)*(p*x + c),
-        R*x*(1-2z) - 1,
+        -p*(1 - 6x + 6x^2 + z - 2x*z) - c*(1-z),   # J[1,1] = ∂ẋ/∂x
+        R * z * (1-z),                                    # J[2,1] = ∂İ/∂x
+        -(1-x)*(p*x + c),                             # J[1,2] = ∂ẋ/∂I
+        R * x * (1-2z) - 1,                               # J[2,2] = ∂İ/∂I
     ]
     J = reshape(J, 2, 2)
     return J
@@ -33,6 +39,17 @@ end
 Return all x-coordinates of endemic equilibria in (0, 1) for the given parameters.
 """
 function calculate_values(R, p, c)
+    # At an endemic equilibrium dI/dt = 0 with I > 0 gives I* = (Rx-1)/(Rx).
+    # Substituting I* into dxdt = 0 and dividing through by (1-x) ≠ 0:
+    #
+    #   -p(1+I*)x(1-x) + p(1-I*)x² + c(1-I*) = 0
+    #
+    # Using 1-I* = 1/(Rx) and 1+I* = (2Rx-1)/(Rx), then multiplying by Rx/p:
+    #
+    #   -(2Rx-1)x(1-x) + x² + c/p = 0
+    #
+    # Expanding and collecting:   2Rx³ - 2Rx² + x + c/p = 0
+    # Equivalently:              -c/p - x + 2Rx² - 2Rx³ = 0
     poly_coeff = [-c/p, -1, 2*R, -2*R]
     f(x) = poly_coeff[1] + poly_coeff[2] * x + poly_coeff[3] * x^2 + poly_coeff[4] * x^3
     return find_zeros(f, 0, 1)
@@ -60,6 +77,7 @@ function find_equilibria(R, p, c)
     roots = calculate_values(R, p, c)
     equilibria = []
     for x in roots
+        # From dIdt = 0 with I > 0: R·x·(1-I) = 1  →  I* = (Rx-1)/(Rx)
         z = (R*x - 1) / (R*x)
         z > 0 || continue
         values, vectors = compute_eigenvalues_jacob(x, z, R, p, c)
