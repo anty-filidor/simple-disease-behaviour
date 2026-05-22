@@ -12,38 +12,29 @@ d0 = c0 / p0   # d = c/p: ratio of spontaneous switching to imitation, used as t
 println("Default parameters: R₀=$R0, p₀=$p0, c₀=$c0, d₀=$(round(d0, digits=4))")
 
 # ─── Figure A: (R, d) heatmap ────────────────────────────────────────────────
-# For each (R, d) cell, compute max Re(λ) for every endemic equilibrium, then
-# take the MINIMUM over equilibria.  This answers: does a stable EE exist here?
-#
-#   min < 0  →  at least one stable endemic equilibrium (blue)
-#   min > 0  →  all endemic equilibria are unstable         (red) → stable limit cycle
-#
-# NOTE: tr(J) is NOT a valid stability diagnostic.  A saddle has det(J) < 0, so
-# one eigenvalue is positive even when tr(J) < 0.  max Re(λ) per equilibrium,
-# then min over equilibria, gives the correct picture.
 
 NR, Nd = 400, 400
 R_grid = range(2.0, 8.0, length = NR)   # reproduction number axis
 d_grid = range(0.01, 0.30, length = Nd) # d = c/p axis
 
-max_re_eig = fill(NaN32, NR, Nd)  # preallocate; NaN flags cells with no endemic equilibrium
+stability_map = fill(NaN32, NR, Nd)   # NaN = no endemic equilibrium (rendered grey)
 
 println("Computing stability heatmap on $(NR)×$(Nd) grid…")
 for j in eachindex(d_grid)
     d = d_grid[j]
-    c = p0 * d   # recover c from d = c/p at the fixed p₀
+    c = p0 * d                            # recover c from d = c/p at fixed p₀
     for i in eachindex(R_grid)
         R = R_grid[i]
         xs = calculate_values(R, p0, c)   # x-coordinates of all endemic equilibria
         re_vals = Float64[]
         for x in xs
-            z = (R*x - 1) / (R*x)   # corresponding I* from dI/dt = 0
-            z > 0 || continue         # skip spurious roots with no positive prevalence
+            z = (R*x - 1) / (R*x)                         # I* from dI/dt = 0 with I > 0
+            z > 0 || continue                               # skip roots with I* ≤ 0 (not endemic)
             J = jacob(x, z, R, p0, c)
-            push!(re_vals, maximum(real.(eigvals(J))))   # max Re(λ): positive = unstable
+            push!(re_vals, maximum(real.(eigvals(J))))      # max Re(λ) for this EE; >0 means unstable (catches saddles: det<0 but tr can still be <0)
         end
-        isempty(re_vals) && continue                       # no endemic equilibrium at this (R, d)
-        max_re_eig[i, j] = Float32(minimum(re_vals))      # most-stable EE: negative = stable fixed point exists, positive = all EEs unstable → limit cycle
+        isempty(re_vals) && continue                        # no endemic equilibrium at this (R, d)
+        stability_map[i, j] = Float32(minimum(re_vals))    # min over EEs: <0 = stable EE exists (blue), >0 = all EEs unstable → limit cycle (red)
     end
 end
 
@@ -59,15 +50,15 @@ hm = heatmap!(
     ax_a,
     R_grid,
     d_grid,
-    max_re_eig,
+    stability_map,
     colormap = Reverse(:RdBu),
     colorrange = (-1, 1),
     nan_color = :lightgray,
 )
 
-# Re(λ) = 0 stability boundary — replace NaN with a large negative value so the
-# contour algorithm never interpolates across the disease-free (grey) region.
-stability_for_contour = replace(max_re_eig, NaN32 => -2.0f0)
+# Contour at 0: boundary of the stable limit cycle domain.
+# NaN replaced with −2 so the algorithm never interpolates across the grey region.
+stability_for_contour = replace(stability_map, NaN32 => -2.0f0)
 contour!(
     ax_a,
     R_grid,

@@ -53,8 +53,10 @@ All plots are saved to `figs/` (configurable via `figs_path` in `src/params.jl`)
 
 `hopf_analysis.jl`:
 
-- `hopf_phase_Rd.png` — (R, d) parameter plane heatmap of max tr(J), with the Hopf contour and the default operating point marked
+- `hopf_phase_Rd.png` — (R, d) parameter plane coloured by stability of the most-stable endemic equilibrium: blue = stable fixed point, red = all equilibria unstable (stable limit cycle), grey = disease-free. The black contour is the stability boundary (Hopf curve + transcritical boundary).
 - `hopf_phase_Rp.png` — Hopf critical curve p_c(R) and limit-cycle frequency ω(R) at fixed d = d₀
+
+See [`docs/parameter_space_analysis.md`](docs/parameter_space_analysis.md) for a detailed explanation of the parameter space structure and the diagnostic used.
 
 ## File structure
 
