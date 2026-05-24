@@ -200,8 +200,7 @@ to the same orbit after discarding the transient.  Equilibria are marked with �
 or ● (stable).
 """
 function plot_limit_cycle(R0, p0, c0, figs_path)
-    T_total = 600.0    # total integration time
-    T_discard = 500.0  # discard transient; show t ∈ [T_discard, T_total]
+    T_total = 100.0   # long enough for both trajectories to reach the cycle
 
     function ode!(du, u, p, _)   # in-place form; mirrors dynamics_rule_si without SVector
         R, im, c = p
@@ -210,11 +209,10 @@ function plot_limit_cycle(R0, p0, c0, figs_path)
         du[2] = R*x*I*(1-I) - I
     end
 
-    function settled_orbit(x0, I0)
+    function trajectory(x0, I0)
         prob = ODEProblem(ode!, [x0, I0], (0.0, T_total), [R0, p0, c0])
         sol = solve(prob, Vern9(), abstol = 1e-9, reltol = 1e-9, saveat = 0.05)
-        idx = findfirst(≥(T_discard), sol.t)   # first index after transient
-        return sol[1, idx:end], sol[2, idx:end]
+        return sol[1, :], sol[2, :]
     end
 
     eq = find_equilibria(R0, p0, c0)
@@ -225,9 +223,9 @@ function plot_limit_cycle(R0, p0, c0, figs_path)
         )
     end
 
-    # Seed from opposite sides of the cycle so both converging paths are visible.
-    x_in, I_in = settled_orbit(eq[1][1] + 0.02, eq[1][2] + 0.02)  # just inside (near EE₁)
-    x_out, I_out = settled_orbit(0.85, 0.05)                        # far outside the cycle
+    # Full trajectories show both the spiral-out (from inside) and spiral-in (from outside).
+    x_in, I_in = trajectory(eq[1][1] + 0.02, eq[1][2] + 0.02)  # near EE₁, inside the cycle
+    x_out, I_out = trajectory(0.85, 0.05)                        # far outside the cycle
 
     fig = Figure(size = (600, 500))
     ax = Axis(
