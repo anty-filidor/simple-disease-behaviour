@@ -200,8 +200,6 @@ to the same orbit after discarding the transient.  Equilibria are marked with �
 or ● (stable).
 """
 function plot_limit_cycle(R0, p0, c0, figs_path)
-    T_total = 100.0   # long enough for both trajectories to reach the cycle
-
     function ode!(du, u, p, _)   # in-place form; mirrors dynamics_rule_si without SVector
         R, im, c = p
         x, I = u
@@ -209,8 +207,8 @@ function plot_limit_cycle(R0, p0, c0, figs_path)
         du[2] = R*x*I*(1-I) - I
     end
 
-    function trajectory(x0, I0)
-        prob = ODEProblem(ode!, [x0, I0], (0.0, T_total), [R0, p0, c0])
+    function trajectory(x0, I0, T)
+        prob = ODEProblem(ode!, [x0, I0], (0.0, T), [R0, p0, c0])
         sol = solve(prob, Vern9(), abstol = 1e-9, reltol = 1e-9, saveat = 0.05)
         return sol[1, :], sol[2, :]
     end
@@ -223,9 +221,29 @@ function plot_limit_cycle(R0, p0, c0, figs_path)
         )
     end
 
-    # Full trajectories show both the spiral-out (from inside) and spiral-in (from outside).
-    x_in, I_in = trajectory(eq[1][1] + 0.02, eq[1][2] + 0.02)  # near EE₁, inside the cycle
-    x_out, I_out = trajectory(0.85, 0.05)                        # far outside the cycle
+    # Outer start: perturb a cycle point radially outward by 20%.
+    # A corner equilibrium at (1, 1-1/R) coexists with the limit cycle, so only
+    # starting points inside the cycle's basin reach the attractor. Computing the
+    # start from the settled orbit guarantees it lies just outside the cycle and
+    # within that basin, regardless of parameter values.
+    xs_settled, Is_settled = let
+        prob = ODEProblem(
+            ode!,
+            [eq[1][1] + 0.001, eq[1][2] + 0.001],
+            (0.0, 600.0),
+            [R0, p0, c0],
+        )
+        sol = solve(prob, Vern9(), abstol = 1e-9, reltol = 1e-9, saveat = 0.05)
+        idx = findfirst(≥(500.0), sol.t)
+        sol[1, idx:end], sol[2, idx:end]
+    end
+    cx, cI = sum(xs_settled) / length(xs_settled), sum(Is_settled) / length(Is_settled)
+    i_far = argmax(xs_settled)   # rightmost point on settled cycle
+    x0_out = cx + 1.2 * (xs_settled[i_far] - cx)
+    I0_out = cI + 1.2 * (Is_settled[i_far] - cI)
+
+    x_in, I_in = trajectory(eq[1][1] + 0.02, eq[1][2] + 0.02, 100.0)   # near EE₁, inside
+    x_out, I_out = trajectory(x0_out, I0_out, 100.0)                      # just outside the cycle
 
     fig = Figure(size = (600, 500))
     ax = Axis(
