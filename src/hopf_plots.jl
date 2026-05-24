@@ -258,18 +258,19 @@ function plot_limit_cycle(R0, p0, c0, figs_path)
 
     for (i, e) in enumerate(eq)
         mk = e[3] ? :circle : :xcross   # ● stable, ✕ unstable
-        scatter!(
+        scatter!(ax, [e[1]], [e[2]], marker = mk, markersize = 14, color = :black)
+        # Label placed slightly above the marker so it never overlaps the trajectory
+        text!(
             ax,
-            [e[1]],
-            [e[2]],
-            marker = mk,
-            markersize = 14,
-            color = :black,
-            label = "EE$i $(e[3] ? "(stable)" : "(unstable)")",
+            e[1],
+            e[2] + 0.025;
+            text = "EE$i",
+            fontsize = 13,
+            align = (:center, :bottom),
         )
     end
 
-    axislegend(ax, position = :rt)
+    axislegend(ax, position = :lt)
     save("$figs_path/hopf_limit_cycle.png", fig, px_per_unit = 1)
     println("Saved $figs_path/hopf_limit_cycle.png")
 end
