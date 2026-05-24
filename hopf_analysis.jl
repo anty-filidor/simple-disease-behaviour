@@ -7,7 +7,7 @@ include("src/params.jl")
 include("src/model.jl")
 include("src/equilibria.jl")
 include("src/hopf.jl")
-include("src/plots.jl")
+include("src/hopf_plots.jl")
 
 d0 = c0 / p0   # d = c/p: ratio of spontaneous switching to imitation, used as the y-axis in Fig A
 println("Default parameters: R₀=$R0, p₀=$p0, c₀=$c0, d₀=$(round(d0, digits=4))")

@@ -61,16 +61,16 @@ See [`ANALYSIS.md`](ANALYSIS.md) for a detailed explanation of the parameter spa
 
 ## File structure
 
-| File                  | Purpose                                                                 |
-| --------------------- | ----------------------------------------------------------------------- |
-| `main.jl`             | Entry point: loads packages, runs simulation, produces plots            |
-| `hopf_analysis.jl`    | Hopf bifurcation analysis: parameter-plane figures                      |
-| `src/params.jl`       | Shared model parameters (R₀, p, c, simulation time, solver settings)    |
-| `src/model.jl`        | ODE right-hand side and initial condition validator                     |
-| `src/equilibria.jl`   | Jacobian, eigenvalue analysis, equilibrium finder                       |
-| `src/hopf.jl`         | Hopf bifurcation utilities: critical p_c and frequency ω                |
-| `src/trajectories.jl` | Trajectory simulation wrappers                                          |
-| `src/plots.jl`        | Figure functions: `plot_heatmap_Rd`, `plot_hopf_Rp`, `plot_limit_cycle` |
+| File                  | Purpose                                                                                   |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| `main.jl`             | Entry point: loads packages, runs simulation, produces plots                              |
+| `hopf_analysis.jl`    | Hopf bifurcation analysis: parameter-plane figures                                        |
+| `src/params.jl`       | Shared model parameters (R₀, p, c, simulation time, solver settings)                      |
+| `src/model.jl`        | ODE right-hand side and initial condition validator                                       |
+| `src/equilibria.jl`   | Jacobian, eigenvalue analysis, equilibrium finder                                         |
+| `src/hopf.jl`         | Hopf bifurcation utilities: critical p_c and frequency ω                                  |
+| `src/trajectories.jl` | Trajectory simulation wrappers                                                            |
+| `src/hopf_plots.jl`   | Figure functions for Hopf analysis: `plot_heatmap_Rd`, `plot_hopf_Rp`, `plot_limit_cycle` |
 
 ## Key parameters (`src/params.jl`)
 
